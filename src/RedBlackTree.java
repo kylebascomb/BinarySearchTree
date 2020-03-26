@@ -11,7 +11,7 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
     }
 
     public void insert(AnyType toAdd) {
-        BinaryNode<AnyType> nodeToAdd = new BinaryNode<AnyType>(toAdd);
+        RedBlackNode<AnyType> nodeToAdd = new RedBlackNode<AnyType>(toAdd);
         if(root == null) {
             root = nodeToAdd;
         }else {
@@ -72,14 +72,14 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
         return allPassed(root);
     }
 
-    private void insert(BinaryNode<AnyType> toAdd, BinaryNode<AnyType> root) {
+    private void insert(RedBlackNode<AnyType> toAdd, RedBlackNode<AnyType> root) {
 
         if(toAdd.element.compareTo(root.element) <= 0) {
             if(root.left == null) {
                 root.left = toAdd;
                 toAdd.parent = root;
                 if(getHeight() >= 2) {
-                    checkForRebalance(toAdd);
+                    insertRebalance(toAdd);
                 }
             }else {
                 insert(toAdd, root.left);
@@ -90,7 +90,7 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
                 root.right = toAdd;
                 toAdd.parent = root;
                 if(getHeight() >= 2) {
-                    checkForRebalance(toAdd);
+                    insertRebalance(toAdd);
                 }
             }else {
                 insert(toAdd, root.right);
@@ -98,7 +98,7 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
         }
     }
 
-    private BinaryNode<AnyType> findMin(BinaryNode<AnyType> root) {
+    private RedBlackNode<AnyType> findMin(RedBlackNode<AnyType> root) {
         if(root == null) {
             return null;
         }
@@ -108,7 +108,7 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
         return findMin(root.left);
     }
 
-    private BinaryNode<AnyType> findMax(BinaryNode<AnyType> root) {
+    private RedBlackNode<AnyType> findMax(RedBlackNode<AnyType> root) {
         if(root == null) {
             return null;
         }
@@ -118,7 +118,7 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
         return findMax(root.right);
     }
 
-    private boolean contains(AnyType x, BinaryNode<AnyType> root) {
+    private boolean contains(AnyType x, RedBlackNode<AnyType> root) {
         if(root == null) {
             return false;
         }
@@ -137,7 +137,7 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
 
 
     // QUESTION 3
-    private int getHeight(BinaryNode<AnyType> root, int height) {
+    private int getHeight(RedBlackNode<AnyType> root, int height) {
         if(root == null) {
             return height - 1;
         }
@@ -147,14 +147,14 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
     }
 
     //QUESTION 4
-    private boolean passedTest(BinaryNode<AnyType> node) {
+    private boolean passedTest(RedBlackNode<AnyType> node) {
         int leftHeight = getHeight(node.left, 0);
         int rightHeight = getHeight(node.right, 0);
         return (Math.abs(leftHeight - rightHeight) <= 1);
     }
 
     //QUESTION 5
-    private boolean allPassed(BinaryNode<AnyType> root) {
+    private boolean allPassed(RedBlackNode<AnyType> root) {
         if(root == null) {
             return true;
         }
@@ -169,7 +169,7 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
     }
 
     //QUESTION 6
-    private void printInOrder(BinaryNode<AnyType> root) {
+    private void printInOrder(RedBlackNode<AnyType> root) {
 
         if(root == null) {
             return;
@@ -180,9 +180,13 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
 
     }
 
-    private void printPreOrder(BinaryNode<AnyType> root){
+    private void printPreOrder(RedBlackNode<AnyType> root){
         if(root == null){
             return;
+        }
+        //prints a * is the node is black
+        if(!root.isRed){
+            System.out.print("*");
         }
         System.out.print(root.element + ", ");
         printPreOrder(root.left);
@@ -190,18 +194,21 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
     }
 
     // QUESTION 7
-    private StringBuilder getPostOrder(BinaryNode<AnyType> root, StringBuilder postOrder) {
+    private StringBuilder getPostOrder(RedBlackNode<AnyType> root, StringBuilder postOrder) {
         if(root == null) {
             return postOrder;
         }
         postOrder = getPostOrder(root.left, postOrder);
         postOrder = getPostOrder(root.right, postOrder);
+        if(!root.isRed){
+            postOrder.append("*");
+        }
         postOrder.append(root.element + " ");
         return postOrder;
     }
 
     // QUESTION 8
-    private Integer getNumberOfNodes(BinaryNode<AnyType> root, Integer count) {
+    private Integer getNumberOfNodes(RedBlackNode<AnyType> root, Integer count) {
         if(root == null) {
             return count;
         }
@@ -211,9 +218,9 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
     }
 
 
-    private void leftRotate(BinaryNode<AnyType> node){
-        BinaryNode<AnyType> child = node.right;
-        BinaryNode<AnyType> temp = child.left;             // left side of child
+    private void leftRotate(RedBlackNode<AnyType> node){
+        RedBlackNode<AnyType> child = node.right;
+        RedBlackNode<AnyType> temp = child.left;             // left side of child
         child.left = node;
         child.parent = node.parent;                         // link parent of child to parent of node
         //if node is root
@@ -231,9 +238,9 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
         }
     }
 
-    private void rightRotate(BinaryNode<AnyType> node){
-        BinaryNode<AnyType> child = node.left;
-        BinaryNode<AnyType> temp = child.right;             // right side of child
+    private void rightRotate(RedBlackNode<AnyType> node){
+        RedBlackNode<AnyType> child = node.left;
+        RedBlackNode<AnyType> temp = child.right;             // right side of child
         child.right = node;
         child.parent = node.parent;                         // link parent of child to parent of node
 
@@ -251,43 +258,46 @@ public class RedBlackTree<AnyType extends Comparable<? super AnyType>> {
         }
     }
 
-    // check if grandparent passes
-    // if not rebalance, else node = node.parent
-    // loop until node.parent == root
-    private void checkForRebalance(BinaryNode<AnyType> node){
-        do{
-            if(!passedTest(node.parent.parent)){
-                insertRebalance(node);
-                break;
-            }else{
-                if(node.parent != root)
-                    node = node.parent;
-            }
-        }while(node.parent != root);
-    }
-
-    private void insertRebalance(BinaryNode<AnyType> node){
-        // node is on left side
-        if(node.parent == node.parent.parent.left){
-            if(node == node.parent.right) {
-                leftRotate(node.parent);
-                rightRotate(node.parent);
-            }else{
-                rightRotate(node.parent.parent);
-            }
-            //need double rotate
-        }else if (node.parent == node.parent.parent.right){
-            //node is on right side
-            if(node == node.parent.left){
-                rightRotate(node.parent);
-                leftRotate(node.parent);
-            } else {
-                leftRotate(node.parent.parent);
+    private void insertRebalance(RedBlackNode<AnyType> node){
+        while(node != root && node.parent.isRed) {
+            if (node.parent == node.parent.parent.left) {                           //node is on the left
+                RedBlackNode<AnyType> aunt = node.parent.parent.right;
+                if(aunt != null && aunt.isRed){                                     //case 1
+                    node.parent.isRed = false;
+                    aunt.isRed = false;
+                    node.parent.parent.isRed = true;
+                    node = node.parent.parent;
+                }else {
+                    if (node == node.parent.right) {                                // case 2
+                        node = node.parent;
+                        leftRotate(node);
+                    }
+                    node.parent.isRed = false;                                      // case 3
+                    node.parent.parent.isRed = true;
+                    rightRotate(node.parent.parent);
+                }
+            } else if (node.parent == node.parent.parent.right) {                   //node is on the right
+                RedBlackNode<AnyType> aunt = node.parent.parent.left;
+                if (aunt != null && aunt.isRed) {                                   // case 1
+                    node.parent.isRed = false;
+                    aunt.isRed = false;
+                    node.parent.parent.isRed = true;
+                    node = node.parent.parent;
+                } else {
+                    if (node == node.parent.left) {                                  // case 2
+                        node = node.parent;
+                        rightRotate(node);
+                    }
+                    node.parent.isRed = false;                                       // case 3
+                    node.parent.parent.isRed = true;
+                    leftRotate(node.parent.parent);
+                }
             }
         }
+        root.isRed = false;
     }
 
 
-    private BinaryNode<AnyType> root;
+    private RedBlackNode<AnyType> root;
 }
 

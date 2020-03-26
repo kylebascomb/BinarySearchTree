@@ -5,6 +5,7 @@ public class BST_Tester {
 
         BinarySearchTree<Integer> bst = new BinarySearchTree<>();
         AVLTree<Integer> avl = new AVLTree<>();
+        RedBlackTree<Integer> rbt = new RedBlackTree<>();
 
         bst.insert(100);
         bst.insert(50);
@@ -35,11 +36,30 @@ public class BST_Tester {
         avl.insert(164);
 
 
+        /**
         System.out.println("Question 8 Pre Order AVL");
         System.out.print("Pre Order: ");
         avl.printPreOrder();
         System.out.print("\nPost Order: ");
         System.out.println(avl.getPostOrder());
+         */
+
+
+        rbt.insert(100);
+        rbt.insert(200);
+        rbt.insert(150);
+        rbt.insert(170);
+        rbt.insert(165);
+        rbt.insert(180);
+        rbt.insert(220);
+        rbt.insert(163);
+        rbt.insert(164);
+
+        System.out.println("Question 6 Red Black");
+        System.out.print("Pre Order: ");
+        rbt.printPreOrder();
+        System.out.print("\nPost Order: ");
+        System.out.println(rbt.getPostOrder());
 
 
 

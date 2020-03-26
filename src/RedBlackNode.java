@@ -1,15 +1,24 @@
-public class RedBlackNode<AnyType> extends BinaryNode {
+public class RedBlackNode<AnyType extends Comparable<? super AnyType>> {
 
 
-    RedBlackNode(Comparable theElement) {
-        super(theElement);
+    // Constructors
+    RedBlackNode( AnyType theElement )
+    {
+        this( theElement, null, null, null );
+    }
+
+    RedBlackNode( AnyType theElement, RedBlackNode<AnyType> lt, RedBlackNode<AnyType> rt, RedBlackNode<AnyType> pt )
+    {
+        element  = theElement;
+        left     = lt;
+        right    = rt;
+        parent   = pt;
         isRed = true;
     }
 
-    RedBlackNode(Comparable theElement, BinaryNode lt, BinaryNode rt, BinaryNode pt) {
-        super(theElement, lt, rt, pt);
-        isRed = true;
-    }
-
-    private boolean isRed;
+    AnyType element;            // The data in the node
+    RedBlackNode<AnyType> left;   // Left child
+    RedBlackNode<AnyType> right;  // Right child
+    RedBlackNode<AnyType> parent;
+    boolean isRed;
 }
