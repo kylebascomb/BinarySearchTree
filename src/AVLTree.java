@@ -78,6 +78,9 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>> {
             if(root.left == null) {
                 root.left = toAdd;
                 toAdd.parent = root;
+                if(getHeight() >= 2) {
+                    checkForRebalance(toAdd);
+                }
             }else {
                 insert(toAdd, root.left);
             }
@@ -86,6 +89,9 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>> {
             if(root.right == null) {
                 root.right = toAdd;
                 toAdd.parent = root;
+                if(getHeight() >= 2) {
+                    checkForRebalance(toAdd);
+                }
             }else {
                 insert(toAdd, root.right);
             }
@@ -206,41 +212,79 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>> {
 
 
     private void leftRotate(BinaryNode<AnyType> node){
-        BinaryNode y = node.right;
-        y = node.right;
-        node.right = y.left;
-        if(y.left != null){
-            y.left.parent = node;
-        }
-        y.parent = node.parent;
-        if(node.parent == null){
-            root = y;
-        } else if(node == node.parent.left){
-            node.parent.left = y;
+        BinaryNode<AnyType> child = node.right;
+        BinaryNode<AnyType> temp = child.left;             // left side of child
+        child.left = node;
+        child.parent = node.parent;                         // link parent of child to parent of node
+        //if node is root
+        if(node.parent == null) {                           //relink parent of node
+            this.root = child;
+        }else if(node.parent.right == node){
+            node.parent.right = child;
         } else{
-            node.parent.right = y;
+            node.parent.left = child;
         }
-        y.left = node;
-        node.parent = y;
+        node.parent = child;
+        node.right = temp;
+        if(node.right != null) {
+            node.right.parent = node;                    // relink parent of temp
+        }
     }
 
     private void rightRotate(BinaryNode<AnyType> node){
-        BinaryNode y = node.left;
-        y = node.left;
-        node.left = y.right;
-        if(y.right != null){
-            y.right.parent = node;
-        }
-        y.parent = node.parent;
-        if(node.parent == null){
-            root = y;
+        BinaryNode<AnyType> child = node.left;
+        BinaryNode<AnyType> temp = child.right;             // right side of child
+        child.right = node;
+        child.parent = node.parent;                         // link parent of child to parent of node
+
+        if(node.parent == null) {                           // relink parent ofnode
+            this.root = child;
         } else if(node == node.parent.right){
-            node.parent.right = y;
-        } else{
-            node.parent.left = y;
+            node.parent.right = child;
+        }else{
+            node.parent.left = child;
         }
-        y.right = node;
-        node.parent = y;
+        node.parent = child;
+        node.left = temp;
+        if(node.left != null) {
+            node.left.parent = node;                    // relink parent of temp
+        }
+    }
+
+    // check if grandparent passes
+    // if not rebalance, else node = node.parent
+    // loop until node.parent == root
+    private void checkForRebalance(BinaryNode<AnyType> node){
+        do{
+            if(!passedTest(node.parent.parent)){
+                insertRebalance(node);
+                break;
+            }else{
+                if(node.parent != root)
+                    node = node.parent;
+            }
+        }while(node.parent != root);
+    }
+
+    private void insertRebalance(BinaryNode<AnyType> node){
+            // node is on left side
+            if(node.parent == node.parent.parent.left){
+                if(node == node.parent.right) {
+                    leftRotate(node.parent);
+                    rightRotate(node.parent);
+                }else{
+                    rightRotate(node.parent.parent);
+                }
+                //need double rotate
+            }else if (node.parent == node.parent.parent.right){
+                //node is on right side
+                if(node == node.parent.left){
+                    rightRotate(node.parent);
+                    leftRotate(node.parent);
+                } else {
+                    leftRotate(node.parent.parent);
+                }
+            }
     }
 
 
